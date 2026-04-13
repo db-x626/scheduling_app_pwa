@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#007bff">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Scheduler">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3Crect fill='%23007bff' width='48' height='48'/%3E%3Ctext x='50%25' y='50%25' font-size='24' fill='white' text-anchor='middle' dy='.3em'%3E🐾%3C/text%3E%3C/svg%3E">
+  <title>Scheduler</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="card">
+
+  <h1>Scheduler</h1>
+
+  <div class="actions">
+    <button onclick="showPage('today')">Today</button>
+    <button onclick="showPage('customers')">Customers</button>
+    <button onclick="showPage('services')">Services</button>
+    <button onclick="showPage('create')">Create Booking</button>
+    <button onclick="showPage('schedule')">Schedule</button>
+    <button onclick="showPage('billing')">Billing</button>
+    <button onclick="showPage('data')">Data</button>
+  </div>
+
+  <div id="page-today">
+    <h2>Today</h2>
+    <h3><button onclick="toggleTodaySection('todayScheduled')" style="background: none; border: none; color: inherit; cursor: pointer;">Scheduled ▼</button></h3>
+    <div id="todayScheduled" class="summary"></div>
+    <h3><button onclick="toggleTodaySection('todayCompleted')" style="background: none; border: none; color: inherit; cursor: pointer;">Completed ▼</button></h3>
+    <div id="todayCompleted" class="summary"></div>
+  </div>
+
+  <div id="page-customers" style="display:none">
+    <h2>Customers</h2>
+    <div class="grid">
+      <input id="custName" placeholder="Name">
+      <input id="custPets" placeholder="Pets">
+      <input id="custAddr" placeholder="Address">
+      <input id="custNotes" placeholder="Notes">
+    </div>
+    <button onclick="addCustomer()">Add Customer</button>
+    <h3><button onclick="toggleCustomerList()" style="background: none; border: none; color: inherit; cursor: pointer;">Customer Profiles ▼</button></h3>
+    <div id="customerList" class="summary"></div>
+  </div>
+
+  <div id="page-services" style="display:none">
+    <h2>Services</h2>
+    <div class="grid">
+      <input id="servName" placeholder="Service Name">
+      <input id="servPrice" placeholder="Price">
+    </div>
+    <button onclick="addService()">Add Service</button>
+    <div id="serviceList" class="summary"></div>
+  </div>
+
+  <div id="page-create" style="display:none">
+    <h2>Create Booking</h2>
+    <div class="grid">
+      <select id="bookingCustomer"></select>
+      <select id="bookingService"></select>
+      <input id="bookingDate" type="date">
+      <button onclick="addBookingDate()">Add Date</button>
+      <input id="bookingStartDate" type="date" placeholder="From">
+      <input id="bookingEndDate" type="date" placeholder="To">
+      <div class="weekday-group">
+        <label><input type="checkbox" class="bookingWeekday" value="0">Sun</label>
+        <label><input type="checkbox" class="bookingWeekday" value="1">Mon</label>
+        <label><input type="checkbox" class="bookingWeekday" value="2">Tue</label>
+        <label><input type="checkbox" class="bookingWeekday" value="3">Wed</label>
+        <label><input type="checkbox" class="bookingWeekday" value="4">Thu</label>
+        <label><input type="checkbox" class="bookingWeekday" value="5">Fri</label>
+        <label><input type="checkbox" class="bookingWeekday" value="6">Sat</label>
+      </div>
+      <button onclick="generateRecurringDates()">Generate Recurrence</button>
+      <button onclick="clearBookingDates()">Clear Dates</button>
+      <select id="bookingHour"></select>
+      <select id="bookingMinute"></select>
+      <select id="bookingAmPm"></select>
+    </div>
+
+    <div id="bookingDateList" class="date-list"></div>
+    <button onclick="createBookings()">Create Bookings</button>
+  </div>
+
+  <div id="page-schedule" style="display:none">
+    <h2>Schedule</h2>
+    <div id="scheduleList" class="summary"></div>
+  </div>
+
+  <div id="page-billing" style="display:none">
+    <h2>Billing</h2>
+    <div id="billingList" class="summary"></div>
+  </div>
+
+  <div id="page-invoice" style="display:none">
+    <h2>Invoice</h2>
+    <div id="invoiceContent" class="summary"></div>
+    <button onclick="printInvoice()">Print Invoice</button>
+    <button onclick="showPage('billing')">Back to Billing</button>
+  </div>
+
+  <div id="page-data" style="display:none">
+    <h2>Data Backup</h2>
+    <p style="color: #999; margin: 10px 0;">Export and restore your data for backup or transfer to another device.</p>
+    <div style="margin: 20px 0;">
+      <h3>Export Data</h3>
+      <p style="color: #999; font-size: 0.9em;">Download all your data as a JSON file.</p>
+      <button onclick="exportData()" style="background: #1f7a1f;">⬇ Export Data</button>
+    </div>
+    <div style="margin: 20px 0;">
+      <h3>Import Data</h3>
+      <p style="color: #999; font-size: 0.9em;">Restore data from a previously exported file.</p>
+      <input type="file" id="dataImportFile" accept=".json" style="margin: 10px 0;">
+      <button onclick="importData()" style="background: #1f4a1f;">⬆ Import Data</button>
+      <p id="importStatus" style="color: #999; font-size: 0.85em; margin-top: 10px;"></p>
+    </div>
+  </div>
+
+</div>
+
+<script src="app.js"></script>
+<script>
+  // Register service worker for PWA functionality
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js')
+      .catch(err => console.warn('Service Worker registration failed:', err));
+  }
+</script>
+</body>
+</html>
